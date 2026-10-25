@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mad Grävmaskin</title>
+<style>
+body{margin:0;background:#bce8ff;font-family:Arial;text-align:center}
+h2{background:#263746;color:white;padding:14px;margin:0}
+canvas{width:100%;max-width:800px;display:block;margin:auto;background:#bce8ff}
+.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px}
+button{padding:16px 3px;border:0;border-radius:12px;background:#ffc52b;font-size:16px;font-weight:bold}
+#dig{background:#51d68b}
+</style>
+</head>
+<body>
+<h2>🚜 MAD GRÄVMASKIN</h2>
+<p>Jordlass: <b id="score">0</b></p>
+<canvas id="game" width="800" height="420"></canvas>
+<div class="controls">
+<button onclick="move(-15)">◀ Kör</button>
+<button onclick="arm(-0.15)">⬆ Lyft arm</button>
+<button onclick="move(15)">Kör ▶</button>
+<button onclick="arm(0.15)">⬇ Sänk arm</button>
+<button onclick="bucket()">↻ Skopa</button>
+<button id="dig" onclick="dig()">⛏ GRÄV!</button>
+</div>
+<script>
+const c=document.getElementById('game'),g=c.getContext('2d');
+let x=190,a=0,b=0,score=0,full=false;
+function draw(){
+g.clearRect(0,0,800,420);
+g.fillStyle='#bce8ff';g.fillRect(0,0,800,420);
+g.fillStyle='#83bd83';g.fillRect(0,265,800,55);
+g.fillStyle='#a86c3b';g.fillRect(0,320,800,100);
+g.fillStyle='#303943';g.beginPath();g.roundRect(x-65,280,145,40,18);g.fill();
+for(let i=0;i<7;i++){g.fillStyle='#87939b';g.beginPath();g.arc(x-48+i*20,300,7,0,7);g.fill()}
+g.fillStyle='#f6bd24';g.fillRect(x-55,250,120,35);
+g.fillStyle='#f6bd24';g.fillRect(x-25,210,62,45);
+g.fillStyle='#63b7d5';g.fillRect(x-17,218,45,28);
+let p={x:x+35,y:255},ang=-1+a;
+let q={x:p.x+Math.cos(ang)*90,y:p.y+Math.sin(ang)*90};
+let ang2=ang+0.35+b;
+let r={x:q.x+Math.cos(ang2)*70,y:q.y+Math.sin(ang2)*70};
+function beam(u,v,w,col){g.strokeStyle=col;g.lineWidth=w;g.lineCap='round';g.beginPath();g.moveTo(u.x,u.y);g.lineTo(v.x,v.y);g.stroke()}
+beam(p,q,22,'#b8790d');beam(p,q,13,'#ffd13c');
+beam(q,r,15,'#b8790d');beam(q,r,9,'#ffd13c');
+g.save();g.translate(r.x,r.y);g.rotate(ang2+0.5);
+g.fillStyle='#424b54';g.beginPath();g.moveTo(-5,-7);g.lineTo(28,-3);g.lineTo(22,22);g.lineTo(5,29);g.lineTo(-5,12);g.closePath();g.fill();g.restore();
+if(full){g.fillStyle='#c98b4c';g.beginPath();g.arc(r.x+8,r.y+10,7,0,7);g.fill()}
+g.fillStyle='#203745';g.font='bold 20px Arial';g.fillText('BYGGARBETSPLATS',20,30);
+}
+function move(d){x=Math.max(75,Math.min(730,x+d));draw()}
+function arm(d){a=Math.max(0,Math.min(1.5,a+d));draw()}
+function bucket(){b=Math.max(-0.4,Math.min(1.2,b+0.2));draw()}
+function dig(){
+if(a<0.6){alert('Sänk armen först!');return}
+if(!full){full=true;alert('Skopan är full! Tryck GRÄV igen för att tömma.')}
+else{full=false;score++;document.getElementById('score').textContent=score}
+draw()
+}
+draw();
+</script>
+</body>
+</html>
